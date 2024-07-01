@@ -7,7 +7,8 @@ project(sherpa-onnx)
 # Remember to update
 # ./nodejs-addon-examples
 # ./dart-api-examples/
-set(SHERPA_ONNX_VERSION "1.9.29")
+# ./sherpa-onnx/flutter/CHANGELOG.md
+set(SHERPA_ONNX_VERSION "1.10.6")
 
 # Disable warning about
 #
@@ -36,6 +37,7 @@ option(SHERPA_ONNX_ENABLE_TTS "Whether to build TTS related code" ON)
 option(SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY "True to link libstdc++ statically. Used only when BUILD_SHARED_LIBS is OFF on Linux" ON)
 option(SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE "True to use pre-installed onnxruntime if available" ON)
 option(SHERPA_ONNX_ENABLE_SANITIZER "Whether to enable ubsan and asan" OFF)
+option(SHERPA_ONNX_BUILD_C_API_EXAMPLES "Whether to enable C API examples" ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -126,6 +128,7 @@ message(STATUS "SHERPA_ONNX_ENABLE_TTS ${SHERPA_ONNX_ENABLE_TTS}")
 message(STATUS "SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY ${SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY}")
 message(STATUS "SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE ${SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE}")
 message(STATUS "SHERPA_ONNX_ENABLE_SANITIZER: ${SHERPA_ONNX_ENABLE_SANITIZER}")
+message(STATUS "SHERPA_ONNX_BUILD_C_API_EXAMPLES: ${SHERPA_ONNX_BUILD_C_API_EXAMPLES}")
 
 if(SHERPA_ONNX_ENABLE_TTS)
   message(STATUS "TTS is enabled")
@@ -166,7 +169,7 @@ if(SHERPA_ONNX_ENABLE_WASM_KWS)
 endif()
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ version to be used.")
+  set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ version to be used.")
 endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "C++ Standard version: ${CMAKE_CXX_STANDARD}")
@@ -301,7 +304,7 @@ endif()
 
 add_subdirectory(sherpa-onnx)
 
-if(SHERPA_ONNX_ENABLE_C_API AND SHERPA_ONNX_ENABLE_BINARY)
+if(SHERPA_ONNX_ENABLE_C_API AND SHERPA_ONNX_ENABLE_BINARY AND SHERPA_ONNX_BUILD_C_API_EXAMPLES)
   set(SHERPA_ONNX_PKG_WITH_CARGS "-lcargs")
   add_subdirectory(c-api-examples)
 endif()

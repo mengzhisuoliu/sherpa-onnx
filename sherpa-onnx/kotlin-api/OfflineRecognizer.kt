@@ -53,6 +53,8 @@ data class OfflineRecognizerConfig(
     var maxActivePaths: Int = 4,
     var hotwordsFile: String = "",
     var hotwordsScore: Float = 1.5f,
+    var ruleFsts: String = "",
+    var ruleFars: String = "",
 )
 
 class OfflineRecognizer(
@@ -169,7 +171,7 @@ fun getOfflineModelConfig(type: Int): OfflineModelConfig? {
                     joiner = "$modelDir/joiner-epoch-30-avg-4.onnx",
                 ),
                 tokens = "$modelDir/tokens.txt",
-                modelType = "zipformer",
+                modelType = "transducer",
             )
         }
 
@@ -207,7 +209,7 @@ fun getOfflineModelConfig(type: Int): OfflineModelConfig? {
                     joiner = "$modelDir/joiner-epoch-12-avg-4.int8.onnx",
                 ),
                 tokens = "$modelDir/tokens.txt",
-                modelType = "zipformer",
+                modelType = "transducer",
             )
         }
 
@@ -220,7 +222,7 @@ fun getOfflineModelConfig(type: Int): OfflineModelConfig? {
                     joiner = "$modelDir/joiner-epoch-20-avg-1.int8.onnx",
                 ),
                 tokens = "$modelDir/tokens.txt",
-                modelType = "zipformer2",
+                modelType = "transducer",
             )
         }
 
@@ -279,7 +281,33 @@ fun getOfflineModelConfig(type: Int): OfflineModelConfig? {
             return OfflineModelConfig(
                 teleSpeech = "$modelDir/model.int8.onnx",
                 tokens = "$modelDir/tokens.txt",
-                modelType = "tele_speech",
+                modelType = "telespeech_ctc",
+            )
+        }
+
+        12 -> {
+            val modelDir = "sherpa-onnx-zipformer-thai-2024-06-20"
+            return OfflineModelConfig(
+                transducer = OfflineTransducerModelConfig(
+                    encoder = "$modelDir/encoder-epoch-12-avg-5.int8.onnx",
+                    decoder = "$modelDir/decoder-epoch-12-avg-5.onnx",
+                    joiner = "$modelDir/joiner-epoch-12-avg-5.int8.onnx",
+                ),
+                tokens = "$modelDir/tokens.txt",
+                modelType = "transducer",
+            )
+        }
+
+        13 -> {
+            val modelDir = "sherpa-onnx-zipformer-korean-2024-06-24"
+            return OfflineModelConfig(
+                transducer = OfflineTransducerModelConfig(
+                    encoder = "$modelDir/encoder-epoch-99-avg-1.int8.onnx",
+                    decoder = "$modelDir/decoder-epoch-99-avg-1.onnx",
+                    joiner = "$modelDir/joiner-epoch-99-avg-1.int8.onnx",
+                ),
+                tokens = "$modelDir/tokens.txt",
+                modelType = "transducer",
             )
         }
     }

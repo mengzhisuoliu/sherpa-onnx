@@ -1,10 +1,8 @@
-/// Copyright (c)  2024.5 by 东风破
+﻿/// Copyright (c)  2024.5 by 东风破
 
-using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using System;
 
 namespace SherpaOnnx
 {
@@ -30,7 +28,14 @@ namespace SherpaOnnx
         // The caller should ensure all passed streams are ready for decoding.
         public void Decode(IEnumerable<OfflineStream> streams)
         {
-            IntPtr[] ptrs = streams.Select(s => s.Handle).ToArray();
+            // TargetFramework=net20 does not support System.Linq
+            // IntPtr[] ptrs = streams.Select(s => s.Handle).ToArray();
+            List<IntPtr> list = new List<IntPtr>();
+            foreach (OfflineStream s in streams)
+            {
+              list.Add(s.Handle);
+            }
+            IntPtr[] ptrs = list.ToArray();
             Decode(_handle.Handle, ptrs, ptrs.Length);
         }
 
@@ -72,4 +77,5 @@ namespace SherpaOnnx
         [DllImport(Dll.Filename, EntryPoint = "DecodeMultipleOfflineStreams")]
         private static extern void Decode(IntPtr handle, IntPtr[] streams, int n);
     }
+
 }

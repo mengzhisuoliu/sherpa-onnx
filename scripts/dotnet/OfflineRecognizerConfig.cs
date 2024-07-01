@@ -1,13 +1,10 @@
 /// Copyright (c)  2024.5 by 东风破
 
-using System.Linq;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using System;
 
 namespace SherpaOnnx
 {
+
     [StructLayout(LayoutKind.Sequential)]
     public struct OfflineRecognizerConfig
     {
@@ -21,7 +18,8 @@ namespace SherpaOnnx
             MaxActivePaths = 4;
             HotwordsFile = "";
             HotwordsScore = 1.5F;
-
+            RuleFsts = "";
+            RuleFars = "";
         }
         public FeatureConfig FeatConfig;
         public OfflineModelConfig ModelConfig;
@@ -36,5 +34,13 @@ namespace SherpaOnnx
         public string HotwordsFile;
 
         public float HotwordsScore;
+
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string RuleFsts;
+
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string RuleFars;
     }
+
+
 }
