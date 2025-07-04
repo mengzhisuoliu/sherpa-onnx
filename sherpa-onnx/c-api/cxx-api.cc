@@ -252,6 +252,9 @@ OfflineRecognizer OfflineRecognizer::Create(
 
   c.model_config.dolphin.model = config.model_config.dolphin.model.c_str();
 
+  c.model_config.zipformer_ctc.model =
+      config.model_config.zipformer_ctc.model.c_str();
+
   c.lm_config.model = config.lm_config.model.c_str();
   c.lm_config.scale = config.lm_config.scale;
 
@@ -366,6 +369,7 @@ OfflineTts OfflineTts::Create(const OfflineTtsConfig &config) {
   c.model.kokoro.length_scale = config.model.kokoro.length_scale;
   c.model.kokoro.dict_dir = config.model.kokoro.dict_dir.c_str();
   c.model.kokoro.lexicon = config.model.kokoro.lexicon.c_str();
+  c.model.kokoro.lang = config.model.kokoro.lang.c_str();
 
   c.model.num_threads = config.model.num_threads;
   c.model.debug = config.model.debug;
@@ -715,5 +719,11 @@ int32_t LinearResampler::GetInputSamplingRate() const {
 int32_t LinearResampler::GetOutputSamplingRate() const {
   return SherpaOnnxLinearResamplerResampleGetOutputSampleRate(p_);
 }
+
+std::string GetVersionStr() { return SherpaOnnxGetVersionStr(); }
+
+std::string GetGitSha1() { return SherpaOnnxGetGitSha1(); }
+
+std::string GetGitDate() { return SherpaOnnxGetGitDate(); }
 
 }  // namespace sherpa_onnx::cxx

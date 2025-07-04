@@ -241,6 +241,10 @@ struct SHERPA_ONNX_API OfflineDolphinModelConfig {
   std::string model;
 };
 
+struct SHERPA_ONNX_API OfflineZipformerCtcModelConfig {
+  std::string model;
+};
+
 struct SHERPA_ONNX_API OfflineMoonshineModelConfig {
   std::string preprocessor;
   std::string encoder;
@@ -267,6 +271,7 @@ struct SHERPA_ONNX_API OfflineModelConfig {
   OfflineMoonshineModelConfig moonshine;
   OfflineFireRedAsrModelConfig fire_red_asr;
   OfflineDolphinModelConfig dolphin;
+  OfflineZipformerCtcModelConfig zipformer_ctc;
 };
 
 struct SHERPA_ONNX_API OfflineLMConfig {
@@ -367,6 +372,7 @@ struct OfflineTtsKokoroModelConfig {
   std::string data_dir;
   std::string dict_dir;
   std::string lexicon;
+  std::string lang;
 
   float length_scale = 1.0;  // < 1, faster in speed; > 1, slower in speed
 };
@@ -613,6 +619,10 @@ class SHERPA_ONNX_API LinearResampler
  private:
   explicit LinearResampler(const SherpaOnnxLinearResampler *p);
 };
+
+std::string GetVersionStr();
+std::string GetGitSha1();
+std::string GetGitDate();
 
 }  // namespace sherpa_onnx::cxx
 

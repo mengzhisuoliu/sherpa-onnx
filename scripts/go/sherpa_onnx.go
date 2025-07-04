@@ -398,6 +398,10 @@ type OfflineNemoEncDecCtcModelConfig struct {
 	Model string // Path to the model, e.g., model.onnx or model.int8.onnx
 }
 
+type OfflineZipformerCtcModelConfig struct {
+	Model string // Path to the model, e.g., model.onnx or model.int8.onnx
+}
+
 type OfflineDolphinModelConfig struct {
 	Model string // Path to the model, e.g., model.onnx or model.int8.onnx
 }
@@ -439,16 +443,17 @@ type OfflineLMConfig struct {
 }
 
 type OfflineModelConfig struct {
-	Transducer OfflineTransducerModelConfig
-	Paraformer OfflineParaformerModelConfig
-	NemoCTC    OfflineNemoEncDecCtcModelConfig
-	Whisper    OfflineWhisperModelConfig
-	Tdnn       OfflineTdnnModelConfig
-	SenseVoice OfflineSenseVoiceModelConfig
-	Moonshine  OfflineMoonshineModelConfig
-	FireRedAsr OfflineFireRedAsrModelConfig
-	Dolphin    OfflineDolphinModelConfig
-	Tokens     string // Path to tokens.txt
+	Transducer   OfflineTransducerModelConfig
+	Paraformer   OfflineParaformerModelConfig
+	NemoCTC      OfflineNemoEncDecCtcModelConfig
+	Whisper      OfflineWhisperModelConfig
+	Tdnn         OfflineTdnnModelConfig
+	SenseVoice   OfflineSenseVoiceModelConfig
+	Moonshine    OfflineMoonshineModelConfig
+	FireRedAsr   OfflineFireRedAsrModelConfig
+	Dolphin      OfflineDolphinModelConfig
+	ZipformerCtc OfflineZipformerCtcModelConfig
+	Tokens       string // Path to tokens.txt
 
 	// Number of threads to use for neural network computation
 	NumThreads int
@@ -540,6 +545,7 @@ func newCOfflineRecognizerConfig(config *OfflineRecognizerConfig) *C.struct_Sher
 	c.model_config.fire_red_asr.decoder = C.CString(config.ModelConfig.FireRedAsr.Decoder)
 
 	c.model_config.dolphin.model = C.CString(config.ModelConfig.Dolphin.Model)
+	c.model_config.zipformer_ctc.model = C.CString(config.ModelConfig.ZipformerCtc.Model)
 
 	c.model_config.tokens = C.CString(config.ModelConfig.Tokens)
 
@@ -653,9 +659,20 @@ func freeCOfflineRecognizerConfig(c *C.struct_SherpaOnnxOfflineRecognizerConfig)
 		C.free(unsafe.Pointer(c.model_config.fire_red_asr.encoder))
 		c.model_config.fire_red_asr.encoder = nil
 	}
+
 	if c.model_config.fire_red_asr.decoder != nil {
 		C.free(unsafe.Pointer(c.model_config.fire_red_asr.decoder))
 		c.model_config.fire_red_asr.decoder = nil
+	}
+
+	if c.model_config.dolphin.model != nil {
+		C.free(unsafe.Pointer(c.model_config.dolphin.model))
+		c.model_config.dolphin.model = nil
+	}
+
+	if c.model_config.zipformer_ctc.model != nil {
+		C.free(unsafe.Pointer(c.model_config.zipformer_ctc.model))
+		c.model_config.zipformer_ctc.model = nil
 	}
 
 	if c.model_config.tokens != nil {
@@ -857,6 +874,7 @@ type OfflineTtsKokoroModelConfig struct {
 	DataDir     string  // Path to espeak-ng-data directory
 	DictDir     string  // Path to dict directory
 	Lexicon     string  // Path to lexicon files
+	Lang        string  // Example: es for Spanish, fr-fr for French. Can be empty
 	LengthScale float32 // Please use 1.0 in general. Smaller -> Faster speech speed. Larger -> Slower speech speed
 }
 
@@ -1005,6 +1023,9 @@ func NewOfflineTts(config *OfflineTtsConfig) *OfflineTts {
 
 	c.model.kokoro.lexicon = C.CString(config.Model.Kokoro.Lexicon)
 	defer C.free(unsafe.Pointer(c.model.kokoro.lexicon))
+
+	c.model.kokoro.lang = C.CString(config.Model.Kokoro.Lang)
+	defer C.free(unsafe.Pointer(c.model.kokoro.lang))
 
 	c.model.kokoro.length_scale = C.float(config.Model.Kokoro.LengthScale)
 
@@ -2022,4 +2043,16 @@ func (audio *DenoisedAudio) Save(filename string) bool {
 
 func (sd *OfflineSpeechDenoiser) SampleRate() int {
 	return int(C.SherpaOnnxOfflineSpeechDenoiserGetSampleRate(sd.impl))
+}
+
+func GetVersion() string {
+	return C.GoString(C.SherpaOnnxGetVersionStr())
+}
+
+func GetGitSha1() string {
+	return C.GoString(C.SherpaOnnxGetGitSha1())
+}
+
+func GetGitDate() string {
+	return C.GoString(C.SherpaOnnxGetGitDate())
 }

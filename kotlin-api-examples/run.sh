@@ -25,6 +25,18 @@ if [[ ! -f ../build/lib/libsherpa-onnx-jni.dylib  && ! -f ../build/lib/libsherpa
 fi
 
 export LD_LIBRARY_PATH=$PWD/build/lib:$LD_LIBRARY_PATH
+echo $LD_LIBRARY_PATH
+
+function testVersion() {
+  out_filename=test_version.jar
+  kotlinc-jvm -include-runtime -d $out_filename \
+    test_version.kt \
+    VersionInfo.kt
+
+  ls -lh $out_filename
+
+  java -Djava.library.path=../build/lib -jar $out_filename
+}
 
 function testSpeakerEmbeddingExtractor() {
   if [ ! -f ./3dspeaker_speech_eres2net_large_sv_zh-cn_3dspeaker_16k.onnx ]; then
@@ -241,6 +253,13 @@ function testOfflineAsr() {
     rm sherpa-onnx-zipformer-multi-zh-hans-2023-9-2.tar.bz2
   fi
 
+  if [ ! -f ./sherpa-onnx-zipformer-ctc-zh-int8-2025-07-03/model.int8.onnx ]; then
+    curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-zipformer-ctc-zh-int8-2025-07-03.tar.bz2
+
+    tar xvf sherpa-onnx-zipformer-ctc-zh-int8-2025-07-03.tar.bz2
+    rm sherpa-onnx-zipformer-ctc-zh-int8-2025-07-03.tar.bz2
+  fi
+
   out_filename=test_offline_asr.jar
   kotlinc-jvm -include-runtime -d $out_filename \
     test_offline_asr.kt \
@@ -436,6 +455,7 @@ function testOfflineSenseVoiceWithHr() {
   ls -lh $out_filename
   java -Djava.library.path=../build/lib -jar $out_filename
 }
+testVersion
 
 testOfflineSenseVoiceWithHr
 testOfflineSpeechDenoiser
